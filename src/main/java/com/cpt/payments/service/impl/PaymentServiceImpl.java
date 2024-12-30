@@ -1,28 +1,34 @@
 package com.cpt.payments.service.impl;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.util.List;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.cpt.payments.constant.ValidatorEnum;
+import com.cpt.payments.dao.ValidationRuleDAO;
 import com.cpt.payments.dto.PaymentRequestDTO;
 import com.cpt.payments.dto.PaymentResponseDTO;
 import com.cpt.payments.service.interfaces.PaymentService;
 import com.cpt.payments.service.interfaces.Validator;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
-	@Value("${validator.rules}")
-	private String validatorRules;
 	
 	private ApplicationContext applicationContext;
 	
-	public PaymentServiceImpl(ApplicationContext applicationContext) {
+	private ValidationRuleDAO validationRuleDAO;
+	
+	private List<String> activeValidatorRules;
+	
+	public PaymentServiceImpl(ApplicationContext applicationContext,ValidationRuleDAO validationRuleDAO) {
 		this.applicationContext = applicationContext;
+		this.validationRuleDAO = validationRuleDAO;
 	}
 	
 	@Override
@@ -32,16 +38,11 @@ public class PaymentServiceImpl implements PaymentService {
 		//name.length();
 		
 		log.info("Payment request received: {}", paymentRequest);
-		log.info("Validator rules: {}", validatorRules);
+		log.info("Active validator rules:{}", activeValidatorRules);
 		
-		// validatorRules is a comma separated list of validator rules. 
-		//Splitting the string and iterating over each rule
-		String[] rules = validatorRules.split(",");
+		activeValidatorRules.forEach(rule -> triggerValidationRule(paymentRequest, rule));
 		
-		for (String rule : rules) {
-			triggerValidationRule(paymentRequest, rule);
-		}
-		
+
 		// return errorCode & errorMessage
 		
 		
@@ -86,6 +87,12 @@ public class PaymentServiceImpl implements PaymentService {
 		
 		// RUle ran successfully
 		return rule;
+	}
+	@PostConstruct
+	public void loadValidatorRule() {
+		activeValidatorRules = validationRuleDAO.loadActiveValidatorNames();
+        log.info("Loaded active validators rules from DB: {}", activeValidatorRules);
+
 	}
 
 }
