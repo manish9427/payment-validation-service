@@ -24,7 +24,7 @@
         </encoder>
     </appender>
 
-   <logger name="com.cpt" level="DEBUG" additivity="false">
+    <logger name="com.cpt" level="INFO" additivity="false">
         <appender-ref ref="FILE" />
         <appender-ref ref="CONSOLE" />
     </logger>

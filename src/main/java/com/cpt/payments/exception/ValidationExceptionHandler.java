@@ -13,24 +13,30 @@ import lombok.extern.slf4j.Slf4j;
 @ControllerAdvice
 @Slf4j
 public class ValidationExceptionHandler {
-    @ExceptionHandler(ValidationException.class)
+
+	@ExceptionHandler(ValidationException.class)
     public ResponseEntity<PaymentError> handleCustomUncheckedException(ValidationException ex) {
-    	log.error("Validation Error: {}", ex);
-    	
-    	PaymentError paymentError = new PaymentError(ex.getErrorCode(), ex.getErrorMessage());
-    	
-    	log.info("Returning from ValidationExceptionHandler: {}", paymentError);
-        return new ResponseEntity<>(paymentError, ex.getHttpStatus());
+        log.error("------ ValidationException occurred: {}", ex);
+        
+        PaymentError paymentError = new PaymentError(
+        		ex.getErrorCode(), ex.getErrorMessage());
+        
+        log.info("Returning from ValidationExceptionHandler: {}", paymentError);
+		
+		return new ResponseEntity<>(paymentError, ex.getHttpStatus());
     }
-    @ExceptionHandler(Exception.class)
+	
+	
+	@ExceptionHandler(Exception.class)
     public ResponseEntity<PaymentError> handleGenericException(Exception ex) {
-    	log.error("-----------handleGenericException occured: {}", ex);
-    	
-    	PaymentError paymentError = new PaymentError(
-    			ErrorCodeEnum.GENERIC_ERROR.getErrorCode(),
-    			ErrorCodeEnum.GENERIC_ERROR.getErrorMessage());
-    	
-    	log.info("Returning from ValidationExceptionHandler: {}", paymentError);
-        return new ResponseEntity<>(paymentError, HttpStatus.INTERNAL_SERVER_ERROR);
+        log.error("------ handleGenericException occurred: {}", ex);
+        
+        PaymentError paymentError = new PaymentError(
+        		ErrorCodeEnum.GENERIC_ERROR.getErrorCode(), 
+        		ErrorCodeEnum.GENERIC_ERROR.getErrorMessage());
+        
+        log.info("Returning from ValidationExceptionHandler: {}", paymentError);
+		
+		return new ResponseEntity<>(paymentError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -1,6 +1,8 @@
 package com.cpt.payments.controller;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger; 
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,29 +23,49 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping(Endpoints.V1_PAYMENTS)
 @Slf4j
 public class PaymentController {
+	
+	// create logger object with slf4j with logback for this class
+	private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
+
 	private PaymentService paymentService;
-	
+
 	private ModelMapper modelMapper;
-	
-//	Constructor Injection -- it is faster 
-    public PaymentController(PaymentService paymentService,ModelMapper modelMapper) {
-        this.paymentService = paymentService;
-        this.modelMapper = modelMapper;
-    }	
-    
-    
+
+	public PaymentController(PaymentService paymentService,
+			ModelMapper modelMapper) {
+		this.paymentService = paymentService;
+		this.modelMapper = modelMapper;
+	}
+
 	@PostMapping
 	public ResponseEntity<PaymentResponse> createPayment(@RequestBody PaymentRequest paymentRequest) {
-		log.info("Payment request received: {}",paymentRequest);
+		
+		System.out.println("Payment request received: " + paymentRequest);
+		
+		log.trace("Payment request received: {}", paymentRequest);
+		log.debug("Payment request received: {}", paymentRequest);
+		
+		log.info("Payment request received: {}", paymentRequest);
+		log.warn("Payment request received: {}", paymentRequest);
+		log.error("Payment request received: {}", paymentRequest);
+		
+		
+		
+		
 		
 		PaymentRequestDTO paymentRequestDTO = modelMapper.map(paymentRequest, PaymentRequestDTO.class);
-		
-		PaymentResponseDTO response = paymentService.validateAndProcessPayment(paymentRequestDTO ); 
-		
+
+		PaymentResponseDTO response = paymentService.validateAndProcessPayment(
+				paymentRequestDTO);
+
 		PaymentResponse paymentRes = modelMapper.map(response, PaymentResponse.class);
-		
-		log.info("Returning from controller paymentRes: {}", paymentRes );
-		
-		return new ResponseEntity<>(paymentRes,HttpStatus.CREATED);
+
+		log.info("Returning from controller paymentRes: {}", paymentRes);
+
+		// use http status code 201 create & prepare Response entity wrapping up paymentRes object
+		//return ResponseEntity.ok(paymentRes);
+
+		return new ResponseEntity<>(
+				paymentRes, HttpStatus.CREATED);
 	}
 }
