@@ -49,6 +49,7 @@ public class PaymentServiceImpl implements PaymentService {
 		log.info("Payment request processed successfully. All rules passed");
 
 		//TODO invoke processing service for further processing paymentRequest
+		
 		// expect some txnId & redirectUrl from processing service
 		String txnId = "TX123";
 		String redirectUrl = "http://www.google.com";
