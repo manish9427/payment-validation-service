@@ -8,4 +8,6 @@ public interface MerchantPaymentRequestDao {
             String merchantTransactionReference, 
             String transactionRequest);
 	
+	public int getUserPaymentAttemptsInLastXMinutes(String endUserId, int durationInMins);
+	
 }

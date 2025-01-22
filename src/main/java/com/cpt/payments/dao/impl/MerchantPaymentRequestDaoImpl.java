@@ -1,5 +1,9 @@
 package com.cpt.payments.dao.impl;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,16 +27,20 @@ public class MerchantPaymentRequestDaoImpl implements MerchantPaymentRequestDao 
 	@Override
 	public MerchantReqUpdate insertMerchantPaymentRequest(String endUserID, String merchantTransactionReference,
 			String transactionRequest) {
-		log.debug("Inserting merchant payment request in DB endUserId:{}" + "|merchantTransactionReference:{}"
-				+ "|transactionRequest:{}", endUserID, merchantTransactionReference, transactionRequest);
+		log.debug(
+				"Inserting merchant payment request in DB endUserId:{}"
+						+ "|merchantTransactionReference:{}"
+						+ "|transactionRequest:{}",
+						endUserID, merchantTransactionReference, transactionRequest);
 
-		String sql = "INSERT INTO merchant_payment_request "
-				+ "(endUserID, merchantTransactionReference, transactionRequest) "
-				+ "VALUES (:endUserID, :merchantTransactionReference, :transactionRequest)";
+		String sql = "INSERT INTO merchant_payment_request " +
+				"(endUserID, merchantTransactionReference, transactionRequest) " +
+				"VALUES (:endUserID, :merchantTransactionReference, :transactionRequest)";
 
 		log.info("Inserting merchant payment request in DB: {}", sql);
 
-		MapSqlParameterSource params = new MapSqlParameterSource().addValue("endUserID", endUserID)
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("endUserID", endUserID)
 				.addValue("merchantTransactionReference", merchantTransactionReference)
 				.addValue("transactionRequest", transactionRequest);
 
@@ -49,6 +57,28 @@ public class MerchantPaymentRequestDaoImpl implements MerchantPaymentRequestDao 
 			return MerchantReqUpdate.ERROR;
 		}
 	}
-	
+
+	@Override
+	public int getUserPaymentAttemptsInLastXMinutes(String endUserId, int durationInMins) {
+		String sql = "SELECT COUNT(*) FROM validations.merchant_payment_request " +
+				"WHERE endUserID = :endUserId " +
+				"AND creationDate BETWEEN :startTime AND :currentTime";
+
+		// Calculate the start time
+		LocalDateTime currentTime = LocalDateTime.now();
+		LocalDateTime startTime = currentTime.minusMinutes(durationInMins);
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("endUserId", endUserId);
+		params.put("currentTime", currentTime);
+		params.put("startTime", startTime);
+
+		Integer paymentAttemptCount = namedParameterJdbcTemplate.queryForObject(sql, params, Integer.class);
+		
+		log.info("Payment attempt count for user||endUserId:{}|durationInMins:{}|paymentAttemptCount:{}", 
+				endUserId, durationInMins, paymentAttemptCount);
+		
+		return paymentAttemptCount;
+	}
 
 }

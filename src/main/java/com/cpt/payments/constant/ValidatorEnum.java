@@ -14,7 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 public enum ValidatorEnum {
     VALIDATOR_RULE1("VALIDATOR_RULE1", ValidatorRule1.class),
     DUPLICATE_TXN_CHECK("DUPLICATE_TXN_CHECK", DuplicateTxnCheck.class),
-    PAYMENT_ATTEMPT_THRESHOLD_CHECK("PAYMENT_ATTEMPT_THRESHOLD_CHECK",PaymentAttemptThresholdCheck.class);
+    PAYMENT_ATTEMPT_THRESHOLD_CHECK("PAYMENT_ATTEMPT_THRESHOLD_CHECK", 
+    		PaymentAttemptThresholdCheck.class);
 
     private static final Map<String, ValidatorEnum> NAME_TO_ENUM_MAP = new HashMap<>();
 
