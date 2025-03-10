@@ -30,7 +30,7 @@
 			<properties>
 				<spring.profiles.active>local</spring.profiles.active>
 				<log4j2.path>
-					D:\\ctws\\sep24ct\\logs\\payment-validation-service</log4j2.path>
+					D:\\ctws\\nov24ct\\logs\\payment-validation-service</log4j2.path>
 			</properties>
 		</profile>
 		<profile>
@@ -112,8 +112,40 @@
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-starter-data-redis</artifactId>
 	    </dependency>
+	    
+	    <dependency>
+			<groupId>io.awspring.cloud</groupId>
+			<artifactId>spring-cloud-starter-aws-secrets-manager-config</artifactId>
+			<version>2.4.2</version>
+		</dependency>
 
+		<dependency>
+	        <groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+	    </dependency>
+		<!-- Spring Boot Actuator (optional for monitoring) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<!-- AOP for Resilience4j annotations if needed -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>2022.0.4</version> <!-- Correct version for Spring Boot 3.1.x -->
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<finalName>payment-validation-service</finalName>
